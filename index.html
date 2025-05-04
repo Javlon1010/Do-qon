@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hisob-kitob ilovasi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 4px;
+      box-sizing: border-box;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    .suggestions {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    .suggestion-item {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background-color: #f0f0f0;
+    }
+    @media print {
+      .controls, h2 {
+        display: none;
+      }
+      #printTotal {
+        display: block;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    }
+    #printTotal {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Hisob-kitob ilovasi</h2>
+
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Mahsulot nomi</th>
+        <th>Soni</th>
+        <th>Narxi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JavaScript orqali 30 qatordan iborat satrlar qo‘shiladi -->
+    </tbody>
+  </table>
+
+  <div class="controls">
+    <button onclick="calculateTotal()">Hisoblash</button>
+    <button onclick="undoLast()">Orqaga qaytarish</button>
+    <button onclick="clearTable()">Tozalash</button>
+    <button onclick="window.print()">Chop etish</button>
+  </div>
+
+  <h3>Umumiy summa: <span id="total">0</span> so'm</h3>
+  <div id="printTotal">Umumiy summa: <span id="printTotalValue">0</span> so'm</div>
+
+  <script>
+    const products = [
+      { nomi: "Olma", narxi: 5000 },
+      { nomi: "Anor", narxi: 6000 },
+      { nomi: "Uzum", narxi: 7000 },
+      { nomi: "Banan", narxi: 8000 },
+      { nomi: "Gilos", narxi: 10000 },
+      { nomi: "Gul", narxi: 2000 },
+      { nomi: "Grechka", narxi: 13000 }
+    ];
+
+    const tableBody = document.querySelector("#productTable tbody");
+    let lastState = [];
+
+    function createRows() {
+      for (let i = 0; i < 30; i++) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td style="position:relative">
+            <input type="text" oninput="showSuggestions(this)">
+            <div class="suggestions"></div>
+          </td>
+          <td><input type="number" min="1"></td>
+          <td><input type="number" readonly></td>
+        `;
+        tableBody.appendChild(row);
+      }
+    }
+
+    function showSuggestions(input) {
+      const container = input.parentElement;
+      const suggestionBox = container.querySelector(".suggestions");
+      const value = input.value.toLowerCase();
+      suggestionBox.innerHTML = "";
+      if (value.length === 0) return;
+      const matched = products.filter(p => p.nomi.toLowerCase().startsWith(value));
+      matched.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "suggestion-item";
+        div.textContent = p.nomi;
+        div.onclick = () => {
+          input.value = p.nomi;
+          container.parentElement.querySelectorAll('input')[2].value = p.narxi;
+          suggestionBox.innerHTML = "";
+        };
+        suggestionBox.appendChild(div);
+      });
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      lastState = [];
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll("input");
+        const soni = parseFloat(inputs[1].value) || 0;
+        const narxi = parseFloat(inputs[2].value) || 0;
+        total += soni * narxi;
+        lastState.push([inputs[0].value, inputs[1].value, inputs[2].value]);
+      });
+      document.getElementById("total").innerText = total.toLocaleString();
+      document.getElementById("printTotalValue").innerText = total.toLocaleString();
+    }
+
+    function undoLast() {
+      if (lastState.length === 0) return;
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach((row, i) => {
+        const inputs = row.querySelectorAll("input");
+        if (i < lastState.length) {
+          inputs[0].value = lastState[i][0];
+          inputs[1].value = lastState[i][1];
+          inputs[2].value = lastState[i][2];
+        }
+      });
+    }
+
+    function clearTable() {
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll("input");
+        inputs.forEach(input => input.value = "");
+        row.querySelector(".suggestions").innerHTML = "";
+      });
+      document.getElementById("total").innerText = "0";
+      document.getElementById("printTotalValue").innerText = "0";
+      lastState = [];
+    }
+
+    createRows();
+  </script>
+
+</body>
+</html>
+
