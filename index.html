@@ -3,24 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hisob-kitob ilovasi</title>
+  <title>Qadam ota do'qani</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      padding: 10px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      font-size: 14px;
     }
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid #999;
       padding: 4px;
       text-align: center;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #e0e0e0;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
@@ -28,10 +29,10 @@
       box-sizing: border-box;
     }
     .controls {
-      margin-top: 20px;
+      margin-top: 10px;
     }
     button {
-      padding: 10px 15px;
+      padding: 8px 12px;
       margin-right: 10px;
       cursor: pointer;
     }
@@ -51,35 +52,52 @@
       background-color: #f0f0f0;
     }
     @media print {
-      .controls, h2 {
+      .controls, h2, h3 {
         display: none;
       }
-      #printTotal {
-        display: block;
+      input[type="text"], input[type="number"] {
+        border: none;
+      }
+      input {
+        pointer-events: none;
+      }
+      tr.hidden-print {
+        display: none;
+      }
+      #printTotalRow {
+        display: table-row;
         font-weight: bold;
-        margin-top: 20px;
+        background-color: #f8f8f8;
       }
     }
-    #printTotal {
+    #printTotalRow {
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <h2>Hisob-kitob ilovasi</h2>
+  <h2>Qadam ota do'qani</h2>
 
   <table id="productTable">
     <thead>
       <tr>
+        <th>#</th>
         <th>Mahsulot nomi</th>
         <th>Soni</th>
         <th>Narxi</th>
+        <th>Summasi</th>
       </tr>
     </thead>
     <tbody>
-      <!-- JavaScript orqali 30 qatordan iborat satrlar qo‘shiladi -->
+      <!-- JavaScript orqali 40 qatordan iborat satrlar qo‘shiladi -->
     </tbody>
+    <tfoot>
+      <tr id="printTotalRow">
+        <td colspan="4">Umumiy summa:</td>
+        <td id="printTotalValue">0</td>
+      </tr>
+    </tfoot>
   </table>
 
   <div class="controls">
@@ -90,31 +108,269 @@
   </div>
 
   <h3>Umumiy summa: <span id="total">0</span> so'm</h3>
-  <div id="printTotal">Umumiy summa: <span id="printTotalValue">0</span> so'm</div>
 
   <script>
     const products = [
-      { nomi: "Olma", narxi: 5000 },
-      { nomi: "Anor", narxi: 6000 },
-      { nomi: "Uzum", narxi: 7000 },
-      { nomi: "Banan", narxi: 8000 },
-      { nomi: "Gilos", narxi: 10000 },
-      { nomi: "Gul", narxi: 2000 },
-      { nomi: "Grechka", narxi: 13000 }
+    { nomi: "Yirik mix", narxi:11000  },
+    { nomi: "Mayda mix-3,4,", narxi: 14000 },
+    { nomi: "Mayda mix-5,6", narxi: 12000 },
+    { nomi: "Mayda mix-2", narxi: 19000 },
+    { nomi: "Qora samarez", narxi: 25000 },
+    { nomi: "Qora samarez-1.6,1.9", narxi: 27000 },
+    { nomi: "Semichqa uchli", narxi: 30000 },
+    { nomi: "Semichqa pobidit", narxi: 32000 },
+    { nomi: "Temir shrup", narxi:31000  },
+    { nomi: "Akfa shrup", narxi: 32000 },
+    { nomi: "Sariq shrup", narxi: 35000 },
+    { nomi: "Bolt", narxi: 22500 },
+    { nomi: "Shaybi Gayki", narxi: 24500 },
+    { nomi: "Bolt mayda", narxi: 35000 },
+    { nomi: "Setka 1m 2x1", narxi: 190000 },
+    { nomi: "Setka 1.2m 2x1", narxi: 228000 },
+    { nomi: "Setka 1.5m 2x1", narxi:285000  },
+    { nomi: "Setka 1m 2x2", narxi: 170000 },
+    { nomi: "Setka 1.2m 2x2", narxi: 204000 },
+    { nomi: "Setka 1.5m 2x2", narxi: 255000 },
+    { nomi: "Shlanka sariq", narxi: 24000 },
+    { nomi: "Shlanka oq", narxi: 28000 },
+    { nomi: "Shlanka oq eron", narxi: 29000 },
+    { nomi: "G'altak kichik", narxi: 400000 },
+    { nomi: "G'altak ortacha", narxi:410000  },
+    { nomi: "G'altak katta", narxi: 420000 },
+    { nomi: "G'altak mshina balon", narxi: 420000 },
+    { nomi: "Balon skuter", narxi: 115000 },
+    { nomi: "Balon pollvon", narxi: 130000 },
+    { nomi: "Balon muravey", narxi: 135000 },
+    { nomi: "Paqrushka", narxi: 130000 },
+    { nomi: "Setka otxoz 5m", narxi: 20000 },
+    { nomi: "Setka otxoz 10m", narxi: 44000 },
+    { nomi: "Setka 1.5m 2x5", narxi:330000  },
+    { nomi: "Dasta hoda", narxi: 12000 },
+    { nomi: "Dasta to'l", narxi: 10000 },
+    { nomi: "Dasta prastoy", narxi: 8000 },
+    { nomi: "Razbavitel 0.5l ", narxi: 4200 },
+    { nomi: "Razbavitel 0.7l ", narxi: 4700 },
+    { nomi: "Razbavitel 0.9l ", narxi: 6000 },
+    { nomi: "646 0.5l arzon", narxi: 9800 },
+    { nomi: "646 1l arzon", narxi: 19000 },
+    { nomi: "646 0.5l orginal", narxi:11800  },
+    { nomi: "646 1l orginal", narxi: 22500 },
+    { nomi: "Qraska 1l rangli", narxi: 15000 },
+    { nomi: "Qraska 1l oq", narxi: 16500 },
+    { nomi: "Laq 283 1l", narxi: 26000 },
+    { nomi: "Laq 283 3l", narxi: 71000 },
+    { nomi: "Qraska 3l rangli", narxi: 49000 },
+    { nomi: "Qraska 3l oq", narxi: 53000 },
+    { nomi: "Qraska tekman 3l rangli", narxi: 46000 },
+    { nomi: "Qraska tekman 3l oq", narxi:49000  },
+    { nomi: "Truba qora 10mm ", narxi: 1200 },
+    { nomi: "Truba qora 15mm", narxi: 1600 },
+    { nomi: "Truba qora 20mm", narxi: 2900 },
+    { nomi: "Truba qora 25mm", narxi: 3700 },
+    { nomi: "Truba qora 32mm", narxi: 5600 },
+    { nomi: "Truba qora 40mm", narxi: 6500 },
+    { nomi: "Truba qora 50mm", narxi: 9500 },
+    { nomi: "Truba qora 76mm 5kg", narxi: 13000 },
+    { nomi: "Truba qora 76mm 6kg", narxi:15500  },
+    { nomi: "Truba qora 89mm 6kg", narxi: 15500 },
+    { nomi: "Truba qora 89mm 7kg", narxi: 17000 },
+    { nomi: "Truba qora 100mm 7kg", narxi: 19000 },
+    { nomi: "Truba qora 100mm 8kg", narxi: 21000 },
+    { nomi: "Truba qora 100mm 9kg", narxi: 23000 },
+    { nomi: "Aftamat chint 3 paz", narxi: 55000 },
+    { nomi: "Aftamat chint 16,25,32,40", narxi: 12500 },
+    { nomi: "Aftamat chint 50,63", narxi: 15000 },
+    { nomi: "Klipsa topli chopikli", narxi:150000  },
+    { nomi: "Gayki 15mm", narxi: 1100 },
+    { nomi: "Gayki 20mm", narxi: 1500 },
+    { nomi: "Gayki 25mm", narxi: 2200 },
+    { nomi: "Gayki 32mm", narxi: 4400 },
+    { nomi: "Gayki 40mm", narxi: 4800 },
+    { nomi: "Gayki 50mm", narxi: 6000 },
+    { nomi: "Kran gallab 15mm", narxi: 12500 },
+    { nomi: "Kran gallab 20mm", narxi: 19000 },
+    { nomi: "Kran gallab 25mm", narxi: 27000 },
+    { nomi: "Kran gallab 32mm", narxi: 40000 },
+    { nomi: "Kran gallab 40mm", narxi: 65000 },
+    { nomi: "Kran gallab 50mm", narxi:110000  },
+    { nomi: "Propka batareya ", narxi: 6600 },
+    { nomi: "Hamut plastmas 10cm", narxi: 6000 },
+    { nomi: "Hamut plastmas 15cm", narxi: 7500 },
+    { nomi: "Hamut plastmas 20cm", narxi: 9000 },
+    { nomi: "Hamut plastmas 25cm", narxi: 11000 },
+    { nomi: "Hamut plastmas 30cm", narxi: 13000 },
+    { nomi: "Hamut plastmas 40cm", narxi: 14000 },
+    { nomi: "Tig' qoy qaychi", narxi: 60000 },
+    { nomi: "Karbit", narxi: 530000 },
+    { nomi: "Kulanka qora", narxi: 14000 },
+    { nomi: "Falga 2", narxi: 125000 },
+    { nomi: "Falga 3", narxi:145000  },
+    { nomi: "Falga 5", narxi: 215000 },
+    { nomi: "Sim qora", narxi: 11000 },
+    { nomi: "Sim oq 1.2", narxi: 14000 },
+    { nomi: "Setka soya (kvadrati)", narxi: 3400 },
+    { nomi: "Lapata 700gr", narxi: 18000 },
+    { nomi: "Lapata 900gr", narxi: 22000 },
+    { nomi: "Chalak qora 10l", narxi: 5600 },
+    { nomi: "Chalak qora 12l", narxi: 7800 },
+    { nomi: "Chalak tayson", narxi: 13000 },
+    { nomi: "Balg'arka xitoy 125mm", narxi: 245000 },
+    { nomi: "Balg'arka xitoy 180mm", narxi: 380000 },
+    { nomi: "Nasos aquar 370", narxi:500000  },
+    { nomi: "Nasos aquar 550", narxi: 610000 },
+    { nomi: "Ip kok", narxi: 26000 },
+    { nomi: "Ip qaish", narxi: 25000 },
+    { nomi: "Ip tros", narxi: 24000 },
+    { nomi: "Ip po'kak", narxi: 2300 },
+    { nomi: "Ip eshilgan", narxi: 3000 },
+    { nomi: "O'q 6,8mm", narxi: 2500 },
+    { nomi: "O'q 10,12mm" , narxi: 2800 },
+    { nomi: "Qantaqt kata", narxi: 40000 },
+    { nomi: "Qantaqt obichni", narxi: 26000 },
+    { nomi: "Qantaqt qora", narxi: 22000 },
+    { nomi: "Bachoq nasos", narxi:36000  },
+    { nomi: "Qo'liq prastoy ", narxi: 1400},
+    { nomi: "Qo'liq xitay", narxi: 2000 },
+    { nomi: "Qo'liq zebra", narxi: 2400 },
+    { nomi: "Qo'liq 300 ko'k", narxi: 3300 },
+    { nomi: "Qo'liq 300 qora-sariq", narxi: 3400 },
+    { nomi: "Qo'liq aranjivi", narxi: 4000 },
+    { nomi: "Qo'liq 300 qalin", narxi: 4400 },
+    { nomi: "Qo'liq pamido'r", narxi: 7000 },
+    { nomi: "Qo'liq rezina qora", narxi: 6000 },
+    { nomi: "Qo'liq rezina qizil baliq", narxi: 12000 },
+    { nomi: "Qo'liq rezina sariq arzon", narxi: 5000  },
+    { nomi: "Qo'liq magnus", narxi: 6700 },
+    { nomi: "Vesta 1li razvetka,klyuchatr", narxi: 11300 },
+    { nomi: "Vesta 2li klyuchatr vn", narxi: 13500 },
+    { nomi: "Vesta 2li razvetka vn", narxi: 15500 },
+    { nomi: "Vesta 2li razvetka nr", narxi: 13500 },
+    { nomi: "Kaseta 2lik", narxi: 9000 },
+    { nomi: "Kaseta 3lik", narxi: 11000 },
+    { nomi: "Kaseta 4lik", narxi: 15000 },
+    { nomi: "Dusel 2li razvetka", narxi: 10000 },
+    { nomi: "Dusel 1li razvetka,klyuchatr", narxi: 6800 },
+    { nomi: "Patron dusel", narxi: 2600 },
+    { nomi: "Shrupavyord arzon", narxi: 185000 },
+    { nomi: "Shrupavyord bez chotka", narxi: 245000 },
+    { nomi: "Disk luga 125mm xitoy", narxi: 1900 },
+    { nomi: "Disk luga 150mm xitoy", narxi: 3400 },
+    { nomi: "Disk luga 180mm xitoy", narxi: 3600 },
+    { nomi: "Disk luga 230mm xitoy", narxi: 4800 },
+    { nomi: "Disk epa 125mm", narxi: 4600 },
+    { nomi: "Disk epa 180mm", narxi: 8800 },
+    { nomi: "Disk epa 230mm", narxi: 12000 },
+    { nomi: "Aptol dizelniy", narxi: 13800 },
+    { nomi: "Aptol universal", narxi: 11800 },
+    { nomi: "Tartqi oranjiviy", narxi: 30000 },
+    { nomi: "O't oraq arzon", narxi: 520000 },
+    { nomi: "Chilpak qizil", narxi: 13500 },
+    { nomi: "Batariya tarazi", narxi: 41000 },
+    { nomi: "Ruchka oyna", narxi: 2100 },
+    { nomi: "Ruchka qapi", narxi: 3000 },
+    { nomi: "Egov oraq", narxi: 9000 },
+    { nomi: "Ochki hamilion", narxi: 38000 },
+    { nomi: "Qaychi universal katta", narxi: 19000 },
+    { nomi: "Disk o't oraq popidit yashil", narxi: 38000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+    { nomi: "", narxi: 27000 },
+    { nomi: "", narxi: 30000 },
+    { nomi: "", narxi: 32000 },
+
+
+
     ];
 
     const tableBody = document.querySelector("#productTable tbody");
+    const printTotalRow = document.getElementById("printTotalRow");
+    const printTotalValue = document.getElementById("printTotalValue");
     let lastState = [];
 
     function createRows() {
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 40; i++) {
         const row = document.createElement("tr");
+        row.classList.add("hidden-print");
         row.innerHTML = `
+          <td>${i + 1}</td>
           <td style="position:relative">
             <input type="text" oninput="showSuggestions(this)">
             <div class="suggestions"></div>
           </td>
-          <td><input type="number" min="1"></td>
+          <td><input type="number" min="1" oninput="updateRowSum(this)"></td>
+          <td><input type="number" readonly></td>
           <td><input type="number" readonly></td>
         `;
         tableBody.appendChild(row);
@@ -134,26 +390,52 @@
         div.textContent = p.nomi;
         div.onclick = () => {
           input.value = p.nomi;
-          container.parentElement.querySelectorAll('input')[2].value = p.narxi;
+          const row = container.parentElement;
+          const inputs = row.querySelectorAll("input");
+          inputs[2].value = p.narxi;
+          updateRowSum(inputs[1]);
           suggestionBox.innerHTML = "";
         };
         suggestionBox.appendChild(div);
       });
     }
 
+    function updateRowSum(input) {
+      const row = input.closest("tr");
+      const inputs = row.querySelectorAll("input");
+      const qty = parseFloat(inputs[1].value) || 0;
+      const price = parseFloat(inputs[2].value) || 0;
+      const sum = qty * price;
+      inputs[3].value = sum;
+    }
+
     function calculateTotal() {
       let total = 0;
       lastState = [];
       const rows = tableBody.querySelectorAll("tr");
-      rows.forEach(row => {
+      let lastFilledRowIndex = -1;
+
+      rows.forEach((row, index) => {
         const inputs = row.querySelectorAll("input");
-        const soni = parseFloat(inputs[1].value) || 0;
-        const narxi = parseFloat(inputs[2].value) || 0;
-        total += soni * narxi;
-        lastState.push([inputs[0].value, inputs[1].value, inputs[2].value]);
+        const name = inputs[0].value.trim();
+        const qty = parseFloat(inputs[1].value) || 0;
+        const price = parseFloat(inputs[2].value) || 0;
+        const sum = qty * price;
+
+        if (name !== "") {
+          row.classList.remove("hidden-print");
+          inputs[3].value = sum;
+          total += sum;
+          lastState.push([inputs[0].value, inputs[1].value, inputs[2].value, inputs[3].value]);
+          lastFilledRowIndex = index;
+        } else {
+          row.classList.add("hidden-print");
+        }
       });
+
       document.getElementById("total").innerText = total.toLocaleString();
-      document.getElementById("printTotalValue").innerText = total.toLocaleString();
+      printTotalValue.innerText = total.toLocaleString();
+      printTotalRow.style.display = total > 0 ? 'table-row' : 'none';
     }
 
     function undoLast() {
@@ -165,6 +447,7 @@
           inputs[0].value = lastState[i][0];
           inputs[1].value = lastState[i][1];
           inputs[2].value = lastState[i][2];
+          inputs[3].value = lastState[i][3];
         }
       });
     }
@@ -174,10 +457,12 @@
       rows.forEach(row => {
         const inputs = row.querySelectorAll("input");
         inputs.forEach(input => input.value = "");
+        row.classList.add("hidden-print");
         row.querySelector(".suggestions").innerHTML = "";
       });
       document.getElementById("total").innerText = "0";
-      document.getElementById("printTotalValue").innerText = "0";
+      printTotalValue.innerText = "0";
+      printTotalRow.style.display = 'none';
       lastState = [];
     }
 
@@ -186,4 +471,3 @@
 
 </body>
 </html>
-
